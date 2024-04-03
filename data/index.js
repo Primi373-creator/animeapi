@@ -1,27 +1,40 @@
+const fs = require('fs');
+const mongoose = require('mongoose');
+const Anime = require('../lib/models/anime');
 
-var fs = require('fs');
-var mongoose = require('mongoose');
+const connectionString = process.env.CONNECTION_STRING || 'mongodb+srv://api:api@api.pldyojn.mongodb.net/?retryWrites=true&w=majority&appName=api';
+mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
 
-var connectionString = process.env.CONNECTION_STRING || 'mongodb+srv://api:api@api.pldyojn.mongodb.net/?retryWrites=true&w=majority&appName=api';
-mongoose.connect(connectionString);
-var Anime = require('../lib/models/anime');
+const folder = './animes';
 
-var folder = './animes';
-var files = fs.readdirSync(folder);
-
-function save_handler(err) {
+fs.readdir(folder, (err, files) => {
     if (err) {
-        console.log(err);
-    } else {
-        console.log('OK! ' + count++);
+        console.error('Error reading directory:', err);
+        return;
     }
-}
 
-var count = 0;
-for(var f in files){
-    var file = files[f];
-    var json = require(folder + '/' + file);
-    var anime = new Anime(json);
-    console.log(anime.title);
-    anime.save(save_handler);
-}
+    let count = 0;
+    files.forEach(file => {
+        fs.readFile(`${folder}/${file}`, 'utf8', (err, data) => {
+            if (err) {
+                console.error('Error reading file:', err);
+                return;
+            }
+            const animeData = JSON.parse(data);
+            const anime = new Anime(animeData);
+            console.log(anime.title);
+            anime.save(err => {
+                if (err) {
+                    console.error('Error saving anime:', err);
+                    return;
+                }
+                console.log(`Saved anime: ${anime.title}`);
+                count++;
+                if (count === files.length) {
+                    console.log('All animes saved successfully.');
+                    mongoose.disconnect();
+                }
+            });
+        });
+    });
+});
