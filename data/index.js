@@ -5,7 +5,7 @@ const Anime = require('../lib/models/anime');
 const connectionString = process.env.CONNECTION_STRING || 'mongodb+srv://api:api@api.pldyojn.mongodb.net/?retryWrites=true&w=majority&appName=api';
 mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
 
-const folder = './animes';
+const folder = '../data/animes';
 
 fs.readdir(folder, (err, files) => {
     if (err) {
