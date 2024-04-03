@@ -1,7 +1,7 @@
 var fs = require('fs');
 var mongoose = require('mongoose');
 
-var connectionString = process.env.CONNECTION_STRING || 'mongodb://localhost/animeapi';
+var connectionString = process.env.CONNECTION_STRING || 'mongodb+srv://api:api@api.pldyojn.mongodb.net/?retryWrites=true&w=majority&appName=api';
 mongoose.connect(connectionString);
 var Anime = require('../lib/models/anime');
 
